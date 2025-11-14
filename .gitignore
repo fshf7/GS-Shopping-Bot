@@ -1,0 +1,25 @@
+# macOS system files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+
+# Credentials / secrets
+credentials.json
+config.py
+
+# Google credentials files
+*.pem
+*.p12
+
+# Logs
+*.log
+
+# JetBrains / VSCode configs (если появятся)
+.vscode/
+.idea/
