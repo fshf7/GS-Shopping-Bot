@@ -6,7 +6,8 @@ from telegram.ext import (
 )
 from google_sheets import add_order_to_sheet
 from telegram.helpers import escape_markdown
-from config import ADMIN_ID
+import os
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 # Состояния диалога
 NAME, CONTACT, DATA, QUANTITY, CONFIRM = range(5)

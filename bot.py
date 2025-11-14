@@ -1,6 +1,7 @@
 from telegram.ext import Application, CommandHandler
 from handlers.order import get_order_handler
-from config import TOKEN
+import os
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='telegram')

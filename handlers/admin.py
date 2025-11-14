@@ -3,7 +3,8 @@ from telegram import Update
 from telegram.ext import (
     ContextTypes, ConversationHandler, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 )
-from config import ADMIN_ID
+import os
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 # состояния
 WAITING_REPLY = range(1)
