@@ -70,45 +70,61 @@ async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
 
     if text == "да":
-        context.user_data["user_id"] = update.effective_user.id  # ✅ сохраняем ID клиента
-        # Сохраняем заказ в Google Sheets
+        # сохраняем id клиента и username (если есть)
+        user = update.effective_user
+        user_id = user.id
+        username = user.username  # может быть None
+
+        context.user_data["user_id"] = user_id
+        context.user_data["username"] = username or ""
+
+        # сохраняем в Google Sheets (у тебя уже есть функция)
         add_order_to_sheet(context.user_data)
-        # Сообщаем клиенту
+
+        # отправляем подтверждение клиенту
         await update.message.reply_text(
             "✅ Ваш заказ принят! Менеджер скоро свяжется с вами. Спасибо! 💬"
         )
-        # Формируем сообщение для владельца
+
+        # формируем ссылку на чат/ник для владельца
+        if username:
+            # если есть username, даём удобную ссылку
+            chat_link = f"https://t.me/{username}"
+            chat_display = f"@{username}"
+        else:
+            # если username нет — показываем tg-схему и user id
+            chat_link = f"tg://user?id={user_id}"
+            chat_display = f"user_id: {user_id}"
+
+        # формируем текст уведомления для владельца
         message = (
             f"📦 *Новый заказ!*\n\n"
-            f"👤 Имя: {context.user_data['name']}\n"
-            f"📞 Контакт: {context.user_data['contact']}\n"
-            f"📦 Товар: {('Фото' if context.user_data['product_type'] == 'photo' else context.user_data['product_data'])}\n"
-            f"🔢 Количество: {context.user_data['quantity']}\n"
-            f"🆔 user_id: `{context.user_data['user_id']}`"
+            f"👤 Имя: {context.user_data.get('name')}\n"
+            f"📞 Контакт (текст): {context.user_data.get('contact')}\n"
+            f"📦 Товар: {('Фото' if context.user_data.get('product_type') == 'photo' else context.user_data.get('product_data'))}\n"
+            f"🔢 Количество: {context.user_data.get('quantity')}\n\n"
+            f"💬 Ссылка на чат/ник: {chat_display}\n"
+            f"{chat_link}"
         )
 
+        # Экранируем для MarkdownV2 (чтобы не было ошибок парсинга)
         safe_message = escape_markdown(message, version=2)
-        
-        keyboard = [
-            [InlineKeyboardButton("💬 Ответить клиенту", callback_data=f"reply_{context.user_data['user_id']}")]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
 
-        if context.user_data["product_type"] == "photo":
+        # Если товар — фото, пересылаем фото с подписью
+        if context.user_data.get("product_type") == "photo":
             await context.bot.send_photo(
                 chat_id=ADMIN_ID,
-                photo=context.user_data["product_data"],
+                photo=context.user_data.get("product_data"),
                 caption=safe_message,
-                reply_markup=reply_markup,
                 parse_mode="MarkdownV2"
             )
         else:
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
                 text=safe_message,
-                reply_markup=reply_markup,
                 parse_mode="MarkdownV2"
-            ) 
+            )
+
     else:
         await update.message.reply_text("Окей, заказ отменён.")
 

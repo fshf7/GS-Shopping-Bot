@@ -1,6 +1,5 @@
 from telegram.ext import Application, CommandHandler
 from handlers.order import get_order_handler
-from handlers.admin import get_admin_reply_handler
 from config import TOKEN
 
 import warnings
@@ -14,17 +13,12 @@ async def start(update, context):
         "Для отмены — /cancel."
     )
 
+
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # базовые команды
     app.add_handler(CommandHandler("start", start))
-
-    # обработчик заказов
     app.add_handler(get_order_handler())
-
-    # ✅ обработчик ответов владельца через inline-кнопку
-    app.add_handler(get_admin_reply_handler())
 
     print("✅ Бот запущен... (нажми Ctrl+C для остановки)")
     app.run_polling()
