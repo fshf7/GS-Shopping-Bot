@@ -12,6 +12,7 @@ env/
 # Credentials / secrets
 credentials.json
 config.py
+.env
 
 # Google credentials files
 *.pem
