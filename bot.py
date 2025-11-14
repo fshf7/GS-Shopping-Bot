@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler
 from handlers.order import get_order_handler
 import os
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='telegram')
@@ -16,7 +16,7 @@ async def start(update, context):
 
 
 def main():
-    app = Application.builder().token(BOT_TOKEN).build()
+    app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(get_order_handler())
